@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'BookMob.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bookmob',
+        'NAME': 'BookMob',
         'USER': 'postgres',
         'PASSWORD': 'password',
         'HOST': 'bookmob-instance-1.cref3lplrnvn.ap-southeast-1.rds.amazonaws.com',
