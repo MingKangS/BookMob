@@ -18,19 +18,13 @@ class SignUpView(APIView):
 			username = serializer.data.get('username')
 			email = serializer.data.get('email')
 			password = serializer.data.get('password')
-			queryset_username, queryset_email = User.objects.filter(username=username), User.objects.filter(email=email)
-			print(queryset_username,queryset_email,queryset_username.exists())
-			if queryset_username.exists() or queryset_email.exists():
-				cred = "username" if queryset_username.exists() else "email"
-				err_message = "Invalid credentials. This " + cred + " already exist."
-				return Response({'Bad Request': err_message}, status=status.HTTP_400_BAD_REQUEST)
+			
 			user = User(username=username, email=email, password=password)
 			user.save()
 			if not self.request.session.exists(self.request.session.session_key):
 				self.request.session.create()
 			return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
-
-		return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LogInView(APIView):
 	serializer_class = UserSerializer
