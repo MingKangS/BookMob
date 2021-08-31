@@ -1,15 +1,14 @@
-from api.views.config import SECRET
 from django.shortcuts import render
 from rest_framework import generics, status
-from ..serializers import UserSerializer
-from ..models import User
+from ..serializers import UserSerializer, BlackListedTokenSerializer
+from ..models import User, BlackListedToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 import jwt, datetime
 from .utils import create_token
-from .config import SECRET
+from config import SECRET
 
 # Create your views here.
 
@@ -51,9 +50,26 @@ class getAuthenticatedUser(APIView):
 		try:
 			payload = jwt.decode(token, SECRET, algorithms=['HS256'])
 		except jwt.ExpiredSignatureError:
-			return Response({'Bad Request': 'UNAUTHORIZED'}, status=status.HTTP_401_UNAUTHORIZED)
+			return Response({'UNAUTHORIZED': 'You are not logged in.'}, status=status.HTTP_401_UNAUTHORIZED)
 
+		try:
+			is_blackListed = BlackListedToken.objects.get(token=token)
+			if is_blackListed:
+				return Response({'UNAUTHORIZED': 'Your token has expired.'}, status=status.HTTP_401_UNAUTHORIZED)
+		except BlackListedToken.DoesNotExist:
+			pass
+		
 		user = User.objects.filter(id=payload['id']).first()
 		serializer = UserSerializer(user)
 		return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+class LogOutView(APIView):
+	serializer_class = BlackListedToken
+
+	def post(self, request, format=None):
+		jwt = request.data["token"]
+		black_listed_token = BlackListedToken(token=jwt)
+		black_listed_token.save()
+
+		return Response(status=status.HTTP_200_OK)
 

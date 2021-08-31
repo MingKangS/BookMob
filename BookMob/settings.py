@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -81,12 +82,13 @@ WSGI_APPLICATION = 'BookMob.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'BookMob',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': 'bookmob-instance-1.cref3lplrnvn.ap-southeast-1.rds.amazonaws.com',
-        'PORT': '5432'
+        'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': 'BookMob',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'USER': config.POSTGRESQL_DB_USER,
+        'PASSWORD': config.POSTGRESQL_DB_PASSWORD,
+        'HOST': config.POSTGRESQL_DB_HOST,
+        'PORT': config.POSTGRESQL_DB_PORT
     }
 }
 

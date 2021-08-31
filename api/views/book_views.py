@@ -13,8 +13,7 @@ class ListAllBooksView(APIView):
 	serializer_class = BookSerializer
 
 	def get(self, request, format=None):
-		if not self.request.session.exists(self.request.session.session_key):
-			return Response({'Unauthorized': 'User is not logged in.'}, status=status.HTTP_401_UNAUTHORIZED)
 		query_set = Book.objects.all()
-		res_query_set = json.loads({"book_list" : [self.serializer_class(book) for book in query_set]})    
-		return Response(res_query_set, content_type ="application/json", status=status.HTTP_200_OK)
+		
+		book_list = self.serializer_class(query_set, many=True)
+		return Response({'book_list': book_list.data}, status=status.HTTP_200_OK)
