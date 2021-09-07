@@ -11,6 +11,7 @@ class BookSerializer(serializers.ModelSerializer):
 	seller_username = serializers.SerializerMethodField('get_seller_username')
 
 	def get_seller_username(self, book):
+		#print(book, book["seller"])
 		return book.seller.username
 
 	class Meta:
